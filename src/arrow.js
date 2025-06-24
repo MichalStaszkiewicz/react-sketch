@@ -39,22 +39,36 @@ class Arrow {
   }
 
   _createArrow = (x1, y1, x2, y2) => {
+    const line = new fabric.Line([x1, y1, x2, y2], {
+      stroke: this.color || 'black',
+      strokeWidth: this.lineWidth || 2,
+      selectable: false
+    });
+  
     const angle = Math.atan2(y2 - y1, x2 - x1);
-    const headlen = 10;
-
-    const points = [
-      { x: x1, y: y1 },
-      { x: x2, y: y2 },
-      { x: x2 - headlen * Math.cos(angle - Math.PI / 6), y: y2 - headlen * Math.sin(angle - Math.PI / 6) },
-      { x: x2, y: y2 },
-      { x: x2 - headlen * Math.cos(angle + Math.PI / 6), y: y2 - headlen * Math.sin(angle + Math.PI / 6) }
-    ];
-
-    return new fabric.Polyline(points, {
-      stroke: 'black',
-      strokeWidth: 2,
-      fill: 'black',
-      selectable: true,
+    const headLength = 15;
+    const arrowAngle = Math.PI / 6;
+  
+    const x3 = x2 - headLength * Math.cos(angle - arrowAngle);
+    const y3 = y2 - headLength * Math.sin(angle - arrowAngle);
+  
+    const x4 = x2 - headLength * Math.cos(angle + arrowAngle);
+    const y4 = y2 - headLength * Math.sin(angle + arrowAngle);
+  
+    const arrowHead1 = new fabric.Line([x2, y2, x3, y3], {
+      stroke: this.color || 'black',
+      strokeWidth: this.lineWidth || 2,
+      selectable: false
+    });
+  
+    const arrowHead2 = new fabric.Line([x2, y2, x4, y4], {
+      stroke: this.color || 'black',
+      strokeWidth: this.lineWidth || 2,
+      selectable: false
+    });
+  
+    return new fabric.Group([line, arrowHead1, arrowHead2], {
+      selectable: true
     });
   }
 }
