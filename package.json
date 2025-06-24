@@ -23,8 +23,8 @@
   "license": "MIT",
   "main": "./dist",
   "scripts": {
-    "dev": "yarn build && npx http-server .",
     "build": "cross-env NODE_ENV=production webpack --mode production --config webpack/library.cfg.js --display-modules",
+    "start:demo": "webpack serve --config webpack/demo.cfg.js --mode development",
     "build:light": "babel ./src --out-dir ./dist",
     "build:examples": "cross-env NODE_ENV=production webpack --mode production --config webpack/examples.cfg.js",
     "clean": "rimraf dist build",

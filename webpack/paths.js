@@ -10,4 +10,5 @@ module.exports = {
   examplesPath: path.join(root, 'examples'),
   entryPath: path.join(root, 'examples', 'run.jsx'),
   templatePath: path.join(root, 'examples', 'base.html'),
+  demoPath: path.join(root, 'demo'),
 };
