@@ -389,13 +389,16 @@ class SketchFieldDemo extends React.Component {
                         label="Canvas Tool"
                         value={this.state.tool}
                         onChange={this._selectTool}
-                        helperText="Please select Canvas Tool">
+                        helperText="Please select Canvas Tool"> 
+                        
+                        <MenuItem value={Tools.Arrow} key="Arrow">Arrow</MenuItem>
                         <MenuItem value={Tools.Select} key="Select">Select</MenuItem>
                         <MenuItem value={Tools.Pencil} key="Pencil">Pencil</MenuItem>
                         <MenuItem value={Tools.Line} key="Line">Line</MenuItem>
                         <MenuItem value={Tools.Rectangle} key="Rectangle">Rectangle</MenuItem>
                         <MenuItem value={Tools.Circle} key="Circle">Circle</MenuItem>
                         <MenuItem value={Tools.Pan} key="Pan">Pan</MenuItem>
+                     
                       </TextField>
                     </div>
                   </div>

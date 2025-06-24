@@ -572,6 +572,7 @@ class SketchField extends PureComponent {
       backgroundColor
     } = this.props;
 
+
     let canvas = this._fc = new fabric.Canvas(this._canvas/*, {
          preserveObjectStacking: false,
          renderOnAddRemove: false,
@@ -657,8 +658,10 @@ class SketchField extends PureComponent {
       className,
       style,
       width,
-      height
+      height,
+     
     } = this.props;
+
 
     let canvasDivStyle = Object.assign({}, style ? style : {},
       width ? { width: width } : {},
@@ -669,12 +672,15 @@ class SketchField extends PureComponent {
         className={className}
         ref={(c) => this._container = c}
         style={canvasDivStyle}>
-        <canvas
+        <canvas 
           id={uuid4()}
           ref={(c) => this._canvas = c}>
           Sorry, Canvas HTML5 element is not supported by your browser
           :(
         </canvas>
+   
+
+      
       </div>
     )
   }

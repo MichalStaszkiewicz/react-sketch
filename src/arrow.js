@@ -31,10 +31,15 @@ class Arrow extends FabricCanvasTool {
       width: this.headSize,
       height: this.headSize,
       fill: this._color,
+      originX: 'center',
+      originY: 'center',
       left: this.x2,
       top: this.y2,
       angle: 0,
-      selectable: false, evented: false
+      scaleX: this._width / 10,
+      scaleY: this._width / 10,
+      selectable: false,
+      evented: false
     });
 
     this._canvas.add(this.line, this.head);
