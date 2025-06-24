@@ -159,7 +159,7 @@ node_modules
 lib/
 build/
 # dist/
-
+demo
 ### Windows template
 # Windows image file caches
 Thumbs.db
