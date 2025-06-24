@@ -1,69 +1,78 @@
 import FabricCanvasTool from './fabrictool';
-import { fabric } from 'fabric';
+const fabric = require('fabric').fabric;
 
-export default class Arrow extends FabricCanvasTool {
-  constructor(canvas, props) {
-    super(canvas);
-    this.setOptions(props);
-  }
-
+class Arrow extends FabricCanvasTool {
   configureCanvas(props) {
-    super.configureCanvas(props);
-    this._canvas.isDrawingMode = false;
-    this.lineWidth = props.lineWidth  || 2;
-    this.color     = props.lineColor  || 'black';
-    this.tempArrow = null;
-  }
-
-  setOptions({ lineWidth, lineColor }) {
-    this.lineWidth = lineWidth  || this.lineWidth;
-    this.color     = lineColor  || this.color;
+    const canvas = this._canvas;
+    canvas.isDrawingMode = canvas.selection = false;
+    canvas.forEachObject(o => o.selectable = o.evented = false);
+    this._width = props.lineWidth;
+    this._color = props.lineColor;
+    this.headSize = props.headSize || 20; 
   }
 
   doMouseDown(o) {
-    this.isDrawing = true;
-    const p = this._canvas.getPointer(o.e);
-    this.startX = p.x;
-    this.startY = p.y;
+    this.isDown = true;
+    const pointer = this._canvas.getPointer(o.e);
+    this.x1 = pointer.x;
+    this.y1 = pointer.y;
+    this.x2 = pointer.x;
+    this.y2 = pointer.y;
+
+    this.line = new fabric.Line([this.x1, this.y1, this.x2, this.y2], {
+      strokeWidth: this._width,
+      stroke: this._color,
+      originX: 'center',
+      originY: 'center',
+      selectable: false, evented: false
+    });
+
+    this.head = new fabric.Triangle({
+      width: this.headSize,
+      height: this.headSize,
+      fill: this._color,
+      left: this.x2,
+      top: this.y2,
+      angle: 0,
+      selectable: false, evented: false
+    });
+
+    this._canvas.add(this.line, this.head);
   }
 
   doMouseMove(o) {
-    if (!this.isDrawing) return;
-    const p = this._canvas.getPointer(o.e);
-    if (this.tempArrow) this._canvas.remove(this.tempArrow);
+    if (!this.isDown) return;
+    const pointer = this._canvas.getPointer(o.e);
+    this.x2 = pointer.x;
+    this.y2 = pointer.y;
 
-    const dx = p.x - this.startX;
-    const dy = p.y - this.startY;
-    const len = Math.hypot(dx, dy);
-    const ang = Math.atan2(dy, dx);
-    const headLen = Math.max(10, Math.min(20, len * 0.1));
-    const arrowAng = Math.PI / 6;
+    this.line.set({ x2: this.x2, y2: this.y2 });
 
-    const x3 = p.x - headLen * Math.cos(ang - arrowAng);
-    const y3 = p.y - headLen * Math.sin(ang - arrowAng);
-    const x4 = p.x - headLen * Math.cos(ang + arrowAng);
-    const y4 = p.y - headLen * Math.sin(ang + arrowAng);
-
-    const pathData = [
-      `M ${this.startX} ${this.startY}`,
-      `L ${p.x} ${p.y}`,
-      `M ${x3} ${y3}`, `L ${p.x} ${p.y}`,
-      `M ${x4} ${y4}`, `L ${p.x} ${p.y}`
-    ].join(' ');
-
-    this.tempArrow = new fabric.Path(pathData, {
-      stroke:      this.color,
-      strokeWidth: this.lineWidth,
-      fill:        '',
-      selectable:  true
+    const angle = Math.atan2(this.y2 - this.y1, this.x2 - this.x1) * 180 / Math.PI;
+    this.head.set({
+      left: this.x2,
+      top: this.y2,
+      angle: angle + 90
     });
 
-    this._canvas.add(this.tempArrow);
-    this._canvas.requestRenderAll();
+    this.line.setCoords();
+    this.head.setCoords();
+    this._canvas.renderAll();
   }
 
-  doMouseUp() {
-    this.isDrawing = false;
-    this.tempArrow = null;
+  doMouseUp(o) {
+    this.isDown = false;
+   
+    const group = new fabric.Group([this.line, this.head], {
+      selectable: false,
+      evented: false
+    });
+  
+    this._canvas.remove(this.line, this.head);
+    this._canvas.add(group);
   }
+
+  doMouseOut(o) { this.doMouseUp(o); }
 }
+
+export default Arrow;
