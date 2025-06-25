@@ -20,6 +20,11 @@ const fabric = require('fabric').fabric;
 class SketchField extends PureComponent {
 
   static propTypes = {
+
+    canvasSize: PropTypes.shape({
+      width: PropTypes.number,
+      height: PropTypes.number,
+    }),
     // the color of the line
     lineColor: PropTypes.string,
     // The width of the line
@@ -60,6 +65,7 @@ class SketchField extends PureComponent {
   };
 
   static defaultProps = {
+    canvasSize: null,
     lineColor: 'black',
     lineWidth: 10,
     fillColor: 'transparent',
@@ -254,44 +260,59 @@ class SketchField extends PureComponent {
    */
   _resize = (e) => {
     if (e) e.preventDefault();
-    let { widthCorrection, heightCorrection } = this.props;
-    let canvas = this._fc;
-    let { offsetWidth, clientHeight } = this._container;
-    let prevWidth = canvas.getWidth();
-    let prevHeight = canvas.getHeight();
-    let wfactor = ((offsetWidth - widthCorrection) / prevWidth).toFixed(2);
-    let hfactor = ((clientHeight - heightCorrection) / prevHeight).toFixed(2);
-    canvas.setWidth(offsetWidth - widthCorrection);
-    canvas.setHeight(clientHeight - heightCorrection);
+  
+    const canvas = this._fc;
+  
+    let newWidth, newHeight;
+  
+    if (this.props.canvasSize && this.props.canvasSize.width && this.props.canvasSize.height) {
+      newWidth = this.props.canvasSize.width;
+      newHeight = this.props.canvasSize.height;
+    } else {
+      const { widthCorrection, heightCorrection } = this.props;
+      const { offsetWidth, clientHeight } = this._container;
+      newWidth = offsetWidth - widthCorrection;
+      newHeight = clientHeight - heightCorrection;
+    }
+  
+    const prevWidth = canvas.getWidth();
+    const prevHeight = canvas.getHeight();
+  
+    const wfactor = (newWidth / prevWidth).toFixed(2);
+    const hfactor = (newHeight / prevHeight).toFixed(2);
+  
+    canvas.setWidth(newWidth);
+    canvas.setHeight(newHeight);
+  
     if (canvas.backgroundImage) {
-      // Need to scale background images as well
       let bi = canvas.backgroundImage;
-      bi.width = bi.width * wfactor;
-      bi.height = bi.height * hfactor
+ 
+      bi.width = newWidth;
+      bi.height = newHeight;
     }
-    let objects = canvas.getObjects();
-    for (let i in objects) {
-      let obj = objects[i];
-      let scaleX = obj.scaleX;
-      let scaleY = obj.scaleY;
-      let left = obj.left;
-      let top = obj.top;
-      let tempScaleX = scaleX * wfactor;
-      let tempScaleY = scaleY * hfactor;
-      let tempLeft = left * wfactor;
-      let tempTop = top * hfactor;
-      obj.scaleX = tempScaleX;
-      obj.scaleY = tempScaleY;
-      obj.left = tempLeft;
-      obj.top = tempTop;
-      obj.setCoords()
+  
+    const objects = canvas.getObjects();
+  
+
+    if (!this.props.canvasSize) {
+      for (let i in objects) {
+        let obj = objects[i];
+        obj.scaleX = obj.scaleX * wfactor;
+        obj.scaleY = obj.scaleY * hfactor;
+        obj.left = obj.left * wfactor;
+        obj.top = obj.top * hfactor;
+        obj.setCoords();
+      }
     }
+  
     this.setState({
-      parentWidth: offsetWidth
+      parentWidth: this._container.offsetWidth
     });
+  
     canvas.renderAll();
     canvas.calcOffset();
   };
+  
 
   /**
    * Sets the background color for this sketch
