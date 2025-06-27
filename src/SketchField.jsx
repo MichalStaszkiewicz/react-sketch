@@ -539,43 +539,20 @@ class SketchField extends PureComponent {
    * Sets the background from the dataUrl given
    *
    * @param dataUrl the dataUrl to be used as a background
-   * @param options
    */
-  setBackgroundFromDataUrl = (dataUrl, options = {}) => {
+  setBackgroundFromDataUrl = (dataUrl) => {
     let canvas = this._fc;
-    if (options.stretched) {
-      delete options.stretched;
-      Object.assign(options, {
-        width: canvas.width,
-        height: canvas.height
-      })
-    }
-    if (options.stretchedX) {
-      delete options.stretchedX;
-      Object.assign(options, {
-        width: canvas.width
-      })
-    }
-    if (options.stretchedY) {
-      delete options.stretchedY;
-      Object.assign(options, {
-        height: canvas.height
-      })
-    }
-    let img = new Image();
-    img.onload = () => {
-      const bg = new fabric.Image(img);
-      bg.set({
-        scaleX: canvas.width / img.width,
-        scaleY: canvas.height / img.height,
+    fabric.Image.fromURL(dataUrl, (img) => {
+      img.set({
         originX: 'left',
         originY: 'top',
+        scaleX: canvas.width / img.width,
+        scaleY: canvas.height / img.height,
       });
-      canvas.setBackgroundImage(bg, () => canvas.renderAll());
-    };
-    
-    img.src = dataUrl
+      canvas.setBackgroundImage(img, canvas.renderAll.bind(canvas));
+    });
   };
+  
 
   addText = (text, options = {}) => {
     let canvas = this._fc;
