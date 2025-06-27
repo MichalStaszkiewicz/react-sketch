@@ -563,8 +563,17 @@ class SketchField extends PureComponent {
       })
     }
     let img = new Image();
-    img.onload = () => canvas.setBackgroundImage(new fabric.Image(img),
-      () => canvas.renderAll(), options);
+    img.onload = () => {
+      const bg = new fabric.Image(img);
+      bg.set({
+        scaleX: canvas.width / img.width,
+        scaleY: canvas.height / img.height,
+        originX: 'left',
+        originY: 'top',
+      });
+      canvas.setBackgroundImage(bg, () => canvas.renderAll());
+    };
+    
     img.src = dataUrl
   };
 
