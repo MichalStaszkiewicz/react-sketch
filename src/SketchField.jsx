@@ -21,10 +21,7 @@ class SketchField extends PureComponent {
 
   static propTypes = {
 
-    canvasSize: PropTypes.shape({
-      width: PropTypes.number,
-      height: PropTypes.number,
-    }),
+ 
     // the color of the line
     lineColor: PropTypes.string,
     // The width of the line
@@ -65,7 +62,7 @@ class SketchField extends PureComponent {
   };
 
   static defaultProps = {
-    canvasSize: null,
+ 
     lineColor: 'black',
     lineWidth: 10,
     fillColor: 'transparent',
@@ -265,9 +262,9 @@ class SketchField extends PureComponent {
   
     let newWidth, newHeight;
   
-    if (this.props.canvasSize && this.props.canvasSize.width && this.props.canvasSize.height) {
-      newWidth = this.props.canvasSize.width;
-      newHeight = this.props.canvasSize.height;
+    if (this.props.width && this.props.height) {
+      newWidth = this.props.width;
+      newHeight = this.props.height;
     } else {
       const { widthCorrection, heightCorrection } = this.props;
       const { offsetWidth, clientHeight } = this._container;
@@ -294,7 +291,7 @@ class SketchField extends PureComponent {
     const objects = canvas.getObjects();
   
 
-    if (!this.props.canvasSize) {
+    if (!this.props.width && !this.props.height) {
       for (let i in objects) {
         let obj = objects[i];
         obj.scaleX = obj.scaleX * wfactor;
